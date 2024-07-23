@@ -1,6 +1,8 @@
 mod ppm;
+mod vec3;
 
-use ppm::{PPMColor, PPMImage};
+use ppm::PPMImage;
+use vec3::Color;
 
 pub fn main() {
     let mut image = PPMImage::new_empty(256, 256);
@@ -13,10 +15,13 @@ pub fn main() {
         );
 
         for x in 0..image.width() {
-            let r = (x as f64) / (image.width() as f64) * 256.;
-            let g = (y as f64) / (image.height() as f64) * 256.;
+            let color = Color::new(
+                (x as f64) / ((image.width() - 1) as f64),
+                (y as f64) / ((image.height() - 1) as f64),
+                0.,
+            );
 
-            image[(x, y)] = PPMColor::new(r.trunc() as u8, g.trunc() as u8, 0);
+            image[(x, y)] = color.into();
         }
     }
 
