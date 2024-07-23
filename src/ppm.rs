@@ -1,19 +1,22 @@
-use std::{fmt::Display, ops::{Index, IndexMut}};
+use std::{
+    fmt::Display,
+    ops::{Index, IndexMut},
+};
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Hash)]
-pub struct Color {
+pub struct PPMColor {
     r: u8,
     g: u8,
     b: u8,
 }
 
-impl Color {
+impl PPMColor {
     pub fn new(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b }
     }
 }
 
-impl Display for Color {
+impl Display for PPMColor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
     }
@@ -23,11 +26,11 @@ impl Display for Color {
 pub struct PPMImage {
     width: usize,
     height: usize,
-    pixels: Vec<Color>,
+    pixels: Vec<PPMColor>,
 }
 
 impl PPMImage {
-    pub fn new(width: usize, height: usize, mut pixels: Vec<Color>) -> Self {
+    pub fn new(width: usize, height: usize, mut pixels: Vec<PPMColor>) -> Self {
         pixels.resize_with(width * height, Default::default);
 
         Self {
@@ -38,10 +41,10 @@ impl PPMImage {
     }
 
     pub fn new_empty(width: usize, height: usize) -> Self {
-		Self {
+        Self {
             width,
             height,
-            pixels: vec![Color::default(); width * height],
+            pixels: vec![PPMColor::default(); width * height],
         }
     }
 
@@ -55,31 +58,31 @@ impl PPMImage {
 }
 
 impl Index<usize> for PPMImage {
-	type Output = Color;
+    type Output = PPMColor;
 
-	fn index(&self, index: usize) -> &Self::Output {
-		&self.pixels[index]
-	}
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.pixels[index]
+    }
 }
 
 impl IndexMut<usize> for PPMImage {
-	fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-		&mut self.pixels[index]
-	}
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.pixels[index]
+    }
 }
 
 impl Index<(usize, usize)> for PPMImage {
-	type Output = Color;
+    type Output = PPMColor;
 
-	fn index(&self, index: (usize, usize)) -> &Self::Output {
-		&self.pixels[index.0 + index.1 * self.width]
-	}
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.pixels[index.0 + index.1 * self.width]
+    }
 }
 
 impl IndexMut<(usize, usize)> for PPMImage {
-	fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
-		&mut self.pixels[index.0 + index.1 * self.width]
-	}
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        &mut self.pixels[index.0 + index.1 * self.width]
+    }
 }
 
 impl Display for PPMImage {
