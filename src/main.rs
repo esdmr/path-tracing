@@ -16,7 +16,20 @@ where
     a * (1. - t) + b * t
 }
 
+fn hit_sphere(center: &Pos3, radius: f64, r: &Ray) -> bool {
+    let oc = center - r.origin();
+    let a = r.direction().squared_abs();
+    let b = -2. * r.direction().dot(&oc);
+    let c = oc.squared_abs() - radius * radius;
+    let discriminant = b * b - 4. * a * c;
+    return discriminant >= 0.;
+}
+
 pub fn ray_color(r: &Ray) -> Color {
+    if hit_sphere(&Pos3::new(0., 0., -1.), 0.5, r) {
+        return Color::new(1., 0., 0.);
+    }
+
     let unit_direction = r.direction().normalize();
     let a = (unit_direction.y() + 1.) / 2.;
     return lerp(a, Color::new(1., 1., 1.), Color::new(0.5, 0.7, 1.));
