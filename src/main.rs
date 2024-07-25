@@ -1,14 +1,22 @@
+mod hittable;
+mod hittable_list;
+mod interval;
 mod ppm;
 mod ray;
+mod sphere;
 mod vec3;
 
 use std::ops::{Add, Mul};
 
+use hittable::Hittable;
+use hittable_list::HittableList;
+use interval::Interval;
 use ppm::PPMImage;
 use ray::Ray;
+use sphere::Sphere;
 use vec3::{Color, Pos3, Vec3};
 
-pub fn lerp<T1, T2, T3>(t: f64, a: T1, b: T1) -> T3
+fn lerp<T1, T2, T3>(t: f64, a: T1, b: T1) -> T3
 where
     T1: Mul<f64, Output = T2>,
     T2: Add<Output = T3>,
@@ -16,18 +24,9 @@ where
     a * (1. - t) + b * t
 }
 
-fn hit_sphere(center: &Pos3, radius: f64, r: &Ray) -> bool {
-    let oc = center - r.origin();
-    let a = r.direction().squared_abs();
-    let b = -2. * r.direction().dot(&oc);
-    let c = oc.squared_abs() - radius * radius;
-    let discriminant = b * b - 4. * a * c;
-    return discriminant >= 0.;
-}
-
-pub fn ray_color(r: &Ray) -> Color {
-    if hit_sphere(&Pos3::new(0., 0., -1.), 0.5, r) {
-        return Color::new(1., 0., 0.);
+fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
+    if let Some(rec) = world.hit(r, Interval::new(0., f64::INFINITY)) {
+        return (rec.normal + Color::new(1., 1., 1.)) / 2.;
     }
 
     let unit_direction = r.direction().normalize();
@@ -43,6 +42,13 @@ pub fn main() {
         PPMImage::new_empty(width, height.max(1))
     };
 
+    // World
+
+    let mut world = HittableList::default();
+
+    world.add(Sphere::new(Pos3::new(0., 0., -2.), 0.5).into());
+    world.add(Sphere::new(Pos3::new(0., -101., -2.), 100.).into());
+
     // Camera
 
     let focal_length = 1.;
@@ -57,9 +63,9 @@ pub fn main() {
     let pixel_delta_v = viewport_v / (image.height() as f64);
 
     let viewport_upper_left =
-        camera_center - Vec3::new(0., 0., focal_length) - viewport_u / 2. - viewport_v / 2.;
+        camera_center - Vec3::new(0., 0., focal_length) - (viewport_u + viewport_v) / 2.;
 
-    let pixel00_loc = viewport_upper_left + pixel_delta_u / 2. + pixel_delta_v / 2.;
+    let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) / 2.;
 
     // Render
 
@@ -73,10 +79,10 @@ pub fn main() {
         for x in 0..image.width() {
             let ray = {
                 let center = pixel00_loc + pixel_delta_u * (x as f64) + pixel_delta_v * (y as f64);
-                Ray::new(center, center - camera_center)
+                Ray::new(center, center - camera_center, x, y)
             };
 
-            let color = ray_color(&ray);
+            let color = ray_color(&ray, &world);
             image[(x, y)] = color.into();
         }
     }

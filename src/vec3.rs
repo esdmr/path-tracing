@@ -1,5 +1,5 @@
 use std::ops::{
-    Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
+    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
 use crate::ppm::PPMColor;
@@ -8,19 +8,19 @@ use crate::ppm::PPMColor;
 pub struct Vec3(f64, f64, f64);
 
 impl Vec3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
+    pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self(x, y, z)
     }
 
-    pub fn x(&self) -> f64 {
+    pub const fn x(&self) -> f64 {
         self.0
     }
 
-    pub fn y(&self) -> f64 {
+    pub const fn y(&self) -> f64 {
         self.1
     }
 
-    pub fn z(&self) -> f64 {
+    pub const fn z(&self) -> f64 {
         self.2
     }
 
@@ -57,36 +57,12 @@ impl Neg for Vec3 {
     }
 }
 
-impl Index<usize> for Vec3 {
-    type Output = f64;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.0,
-            1 => &self.1,
-            2 => &self.2,
-            _ => panic!("Vec3 index {index} out of bounds (> 2)"),
-        }
-    }
-}
-
-impl IndexMut<usize> for Vec3 {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.0,
-            1 => &mut self.1,
-            2 => &mut self.2,
-            _ => panic!("Vec3 index {index} out of bounds (> 2)"),
-        }
-    }
-}
-
 impl Into<PPMColor> for Vec3 {
     fn into(self) -> PPMColor {
         PPMColor::new(
-            (255. * self.0).trunc().clamp(0., 255.) as u8,
-            (255. * self.1).trunc().clamp(0., 255.) as u8,
-            (255. * self.2).trunc().clamp(0., 255.) as u8,
+            (255.999 * self.0).trunc() as u8,
+            (255.999 * self.1).trunc() as u8,
+            (255.999 * self.2).trunc() as u8,
         )
     }
 }
