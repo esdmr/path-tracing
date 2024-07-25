@@ -86,6 +86,13 @@ impl Vec3 {
     pub fn reflect(&self, normal: &Self) -> Self {
         *self - normal * (2. * self.dot(normal))
     }
+
+    pub fn refract(&self, normal: &Self, eta_i_over_eta_t: f64) -> Self {
+        let cos_theta = (-self).dot(normal).min(1.);
+        let r_out_perpendicular = (*self + normal * cos_theta) * eta_i_over_eta_t;
+        let r_out_parallel = normal * -(1. - r_out_perpendicular.squared_abs()).abs().sqrt();
+        return r_out_perpendicular + r_out_parallel;
+    }
 }
 
 impl Neg for Vec3 {
@@ -93,6 +100,14 @@ impl Neg for Vec3 {
 
     fn neg(self) -> Self::Output {
         Self(-self.0, -self.1, -self.2)
+    }
+}
+
+impl Neg for &Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Self::Output {
+        Vec3(-self.0, -self.1, -self.2)
     }
 }
 
