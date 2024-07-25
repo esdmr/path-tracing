@@ -43,8 +43,8 @@ impl Hittable for HittableList {
     }
 }
 
-impl Into<HittableObject> for HittableList {
-    fn into(self) -> HittableObject {
-        Rc::new(self)
+impl From<HittableList> for HittableObject {
+    fn from(val: HittableList) -> Self {
+        Rc::new(val)
     }
 }

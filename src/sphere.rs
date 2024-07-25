@@ -52,8 +52,8 @@ impl Hittable for Sphere {
     }
 }
 
-impl Into<HittableObject> for Sphere {
-    fn into(self) -> HittableObject {
-        Rc::new(self)
+impl From<Sphere> for HittableObject {
+    fn from(val: Sphere) -> Self {
+        Rc::new(val)
     }
 }

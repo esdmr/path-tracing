@@ -57,12 +57,12 @@ impl Neg for Vec3 {
     }
 }
 
-impl Into<PPMColor> for Vec3 {
-    fn into(self) -> PPMColor {
+impl From<Vec3> for PPMColor {
+    fn from(val: Vec3) -> Self {
         PPMColor::new(
-            (255.999 * self.0).trunc() as u8,
-            (255.999 * self.1).trunc() as u8,
-            (255.999 * self.2).trunc() as u8,
+            (255.999 * val.0).trunc() as u8,
+            (255.999 * val.1).trunc() as u8,
+            (255.999 * val.2).trunc() as u8,
         )
     }
 }

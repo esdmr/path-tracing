@@ -92,7 +92,7 @@ impl Display for PPMImage {
         write!(f, "P3\n{} {}\n255\n", self.width, self.height)?;
 
         for pixel in &self.pixels {
-            write!(f, "{} {} {}\n", pixel.r, pixel.g, pixel.b)?;
+            writeln!(f, "{} {} {}", pixel.r, pixel.g, pixel.b)?;
         }
 
         Ok(())
