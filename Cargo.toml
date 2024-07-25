@@ -3,6 +3,9 @@ name = "path-tracing"
 version = "0.1.0"
 edition = "2021"
 
+[profile.dev]
+opt-level = 2
+
 [profile.release]
 lto = true
 opt-level = 3
