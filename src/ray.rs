@@ -26,6 +26,14 @@ impl Ray {
         &self.direction
     }
 
+    pub const fn pixel_x(&self) -> usize {
+        self.pixel_x
+    }
+
+    pub const fn pixel_y(&self) -> usize {
+        self.pixel_y
+    }
+
 	pub const fn is_pixel_at(&self, x: usize, y: usize) -> bool {
 		self.pixel_x == x && self.pixel_y == y
 	}

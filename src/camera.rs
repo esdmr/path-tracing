@@ -12,6 +12,7 @@ pub struct CameraOptions {
     pub aspect_ratio: f64,
     pub image_width: usize,
     pub samples_per_pixel: usize,
+    pub max_depth: usize,
 }
 
 impl Default for CameraOptions {
@@ -20,6 +21,7 @@ impl Default for CameraOptions {
             aspect_ratio: 1.,
             image_width: 100,
             samples_per_pixel: 10,
+            max_depth: 10,
         }
     }
 }
@@ -34,6 +36,7 @@ pub struct Camera {
     pixel_delta_v: Vec3,
     samples_per_pixel: usize,
     pixel_samples_scale: f64,
+    max_depth: usize,
 }
 
 impl Camera {
@@ -64,6 +67,10 @@ impl Camera {
         let samples_per_pixel = options.samples_per_pixel;
         let pixel_samples_scale = 1. / (samples_per_pixel as f64);
 
+        // Diffuse
+
+        let max_depth = options.max_depth;
+
         Self {
             image_width,
             image_height,
@@ -73,6 +80,7 @@ impl Camera {
             pixel_delta_v,
             samples_per_pixel,
             pixel_samples_scale,
+            max_depth,
         }
     }
 
@@ -89,9 +97,15 @@ impl Camera {
         Vec3::new(random() - 0.5, random() - 0.5, 0.)
     }
 
-    fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
-        if let Some(rec) = world.hit(r, Interval::new(0., f64::INFINITY)) {
-            return (rec.normal + Color::new(1., 1., 1.)) / 2.;
+    fn ray_color(r: &Ray, depth: usize, world: &dyn Hittable) -> Color {
+        if depth <= 0 {
+            return Color::default();
+        }
+
+        if let Some(rec) = world.hit(r, Interval::new(0.001, f64::INFINITY)) {
+            let direction = rec.normal + Vec3::random_normalized();
+            return Self::ray_color(&Ray::new(rec.p, direction, r.pixel_x(), r.pixel_y()),  depth - 1, world)
+                / 2.;
         }
 
         let unit_direction = r.direction().normalize();
@@ -110,12 +124,12 @@ impl Camera {
             );
 
             for x in 0..image.width() {
-				let mut color = Color::default();
+                let mut color = Color::default();
 
-				for _sample in 0..self.samples_per_pixel {
-					let ray = self.get_ray(x, y);
-					color += Self::ray_color(&ray, world);
-				}
+                for _sample in 0..self.samples_per_pixel {
+                    let ray = self.get_ray(x, y);
+                    color += Self::ray_color(&ray, self.max_depth, world);
+                }
 
                 image[(x, y)] = (color * self.pixel_samples_scale).into();
             }

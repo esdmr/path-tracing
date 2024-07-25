@@ -1,8 +1,6 @@
-use std::ops::{
-    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign,
-};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-use crate::{interval::Interval, ppm::PPMColor};
+use crate::{f64::random, interval::Interval, ppm::PPMColor};
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Vec3(f64, f64, f64);
@@ -44,8 +42,40 @@ impl Vec3 {
         self.squared_abs().sqrt()
     }
 
-    pub fn normalize(&self) -> Vec3 {
+    pub fn normalize(&self) -> Self {
         self / self.abs()
+    }
+
+    pub fn random() -> Self {
+        Vec3(random(), random(), random())
+    }
+
+    pub fn random_between(interval: Interval) -> Self {
+        Vec3(interval.random(), interval.random(), interval.random())
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Self::random_between(Interval::new(-1., 1.));
+
+            if p.squared_abs() < 1. {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_normalized() -> Self {
+        Self::random_in_unit_sphere().normalize()
+    }
+
+    pub fn random_on_hemisphere(normal: &Self) -> Self {
+        let vec = Self::random_normalized();
+
+        if vec.dot(normal) > 0. {
+            vec
+        } else {
+            -vec
+        }
     }
 }
 
@@ -61,9 +91,9 @@ impl From<Vec3> for PPMColor {
     fn from(val: Vec3) -> Self {
         let intensity = Interval::new(0., 0.999);
         PPMColor::new(
-            (256. * intensity.clamp(val.0)).trunc() as u8,
-            (256. * intensity.clamp(val.1)).trunc() as u8,
-            (256. * intensity.clamp(val.2)).trunc() as u8,
+            (256. * intensity.clamp(val.0.max(0.).sqrt())).trunc() as u8,
+            (256. * intensity.clamp(val.1.max(0.).sqrt())).trunc() as u8,
+            (256. * intensity.clamp(val.2.max(0.).sqrt())).trunc() as u8,
         )
     }
 }

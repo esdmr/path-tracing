@@ -1,3 +1,5 @@
+use crate::f64::{lerp, random};
+
 pub struct Interval {
     min: f64,
     max: f64,
@@ -44,5 +46,9 @@ impl Interval {
 
     pub fn clamp(&self, x: f64) -> f64 {
         x.clamp(self.min, self.max)
+    }
+
+    pub fn random(&self) -> f64 {
+        lerp(random(), self.get_min(), self.get_max())
     }
 }
