@@ -1,5 +1,5 @@
 use crate::{
-    f64::lerp,
+    f64::{lerp, random},
     hittable::Hittable,
     interval::Interval,
     ppm::PPMImage,
@@ -11,6 +11,7 @@ use crate::{
 pub struct CameraOptions {
     pub aspect_ratio: f64,
     pub image_width: usize,
+    pub samples_per_pixel: usize,
 }
 
 impl Default for CameraOptions {
@@ -18,6 +19,7 @@ impl Default for CameraOptions {
         Self {
             aspect_ratio: 1.,
             image_width: 100,
+            samples_per_pixel: 10,
         }
     }
 }
@@ -30,6 +32,8 @@ pub struct Camera {
     pixel00_loc: Pos3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
+    samples_per_pixel: usize,
+    pixel_samples_scale: f64,
 }
 
 impl Camera {
@@ -55,6 +59,11 @@ impl Camera {
 
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) / 2.;
 
+        // Anti-aliasing
+
+        let samples_per_pixel = options.samples_per_pixel;
+        let pixel_samples_scale = 1. / (samples_per_pixel as f64);
+
         Self {
             image_width,
             image_height,
@@ -62,7 +71,22 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
+            samples_per_pixel,
+            pixel_samples_scale,
         }
+    }
+
+    fn get_ray(&self, x: usize, y: usize) -> Ray {
+        let offset = Self::sample_square();
+        let pixel_sample = self.pixel00_loc
+            + (self.pixel_delta_u * ((x as f64) + offset.x()))
+            + (self.pixel_delta_v * ((y as f64) + offset.y()));
+
+        Ray::new(self.center, pixel_sample - self.center, x, y)
+    }
+
+    fn sample_square() -> Vec3 {
+        Vec3::new(random() - 0.5, random() - 0.5, 0.)
     }
 
     fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
@@ -86,15 +110,14 @@ impl Camera {
             );
 
             for x in 0..image.width() {
-                let ray = {
-                    let center = self.pixel00_loc
-                        + self.pixel_delta_u * (x as f64)
-                        + self.pixel_delta_v * (y as f64);
-                    Ray::new(center, center - self.center, x, y)
-                };
+				let mut color = Color::default();
 
-                let color = Self::ray_color(&ray, world);
-                image[(x, y)] = color.into();
+				for _sample in 0..self.samples_per_pixel {
+					let ray = self.get_ray(x, y);
+					color += Self::ray_color(&ray, world);
+				}
+
+                image[(x, y)] = (color * self.pixel_samples_scale).into();
             }
         }
 

@@ -2,7 +2,7 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
-use crate::ppm::PPMColor;
+use crate::{interval::Interval, ppm::PPMColor};
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Vec3(f64, f64, f64);
@@ -59,10 +59,11 @@ impl Neg for Vec3 {
 
 impl From<Vec3> for PPMColor {
     fn from(val: Vec3) -> Self {
+        let intensity = Interval::new(0., 0.999);
         PPMColor::new(
-            (255.999 * val.0).trunc() as u8,
-            (255.999 * val.1).trunc() as u8,
-            (255.999 * val.2).trunc() as u8,
+            (256. * intensity.clamp(val.0)).trunc() as u8,
+            (256. * intensity.clamp(val.1)).trunc() as u8,
+            (256. * intensity.clamp(val.2)).trunc() as u8,
         )
     }
 }

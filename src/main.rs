@@ -21,6 +21,7 @@ pub fn main() {
     let camera = Camera::new(CameraOptions {
         aspect_ratio: 16. / 9.,
         image_width: 400,
+        samples_per_pixel: 100,
     });
 
     let image = camera.render(&world);
