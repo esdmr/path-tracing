@@ -77,6 +77,15 @@ impl Vec3 {
             -vec
         }
     }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        (self.x().abs() < s) && (self.y().abs() < s) && (self.z().abs() < s)
+    }
+
+    pub fn reflect(&self, normal: &Self) -> Self {
+        *self - normal * (2. * self.dot(normal))
+    }
 }
 
 impl Neg for Vec3 {

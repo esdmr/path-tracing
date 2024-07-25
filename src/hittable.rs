@@ -1,20 +1,39 @@
 use std::{fmt::Debug, rc::Rc};
 
 use crate::{
-    interval::Interval,
-    ray::Ray,
-    vec3::{Pos3, Vec3},
+    interval::Interval, material::MaterialObject, ray::Ray, vec3::{Pos3, Vec3}
 };
 
-#[derive(Debug, Default, PartialEq, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct HitRecord {
-    pub p: Pos3,
-    pub normal: Vec3,
     pub t: f64,
+    pub p: Pos3,
+    pub mat: MaterialObject,
     pub front_face: bool,
+    pub normal: Vec3,
 }
 
 impl HitRecord {
+    pub fn new(
+        t: f64,
+        p: Pos3,
+        mat: MaterialObject,
+        r: &Ray,
+        outward_normal: Vec3,
+    ) -> Self {
+        let mut rec = HitRecord {
+            t,
+            p,
+            mat,
+            front_face: bool::default(),
+            normal: Vec3::default(),
+        };
+
+        rec.set_face_normal(r, outward_normal);
+
+        rec
+    }
+
     pub fn set_face_normal(&mut self, r: &Ray, outward_normal: Vec3) {
         self.front_face = r.direction().dot(&outward_normal) < 0.;
 

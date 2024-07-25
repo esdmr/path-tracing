@@ -34,8 +34,8 @@ impl Hittable for HittableList {
 
         for object in &self.objects {
             if let Some(rec) = object.hit(r, Interval::new(ray_t.get_min(), closest_so_far)) {
-                closest_rec = Some(rec);
                 closest_so_far = rec.t;
+                closest_rec = Some(rec);
             }
         }
 
