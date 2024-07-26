@@ -13,6 +13,10 @@ pub struct CameraOptions {
     pub image_width: usize,
     pub samples_per_pixel: usize,
     pub max_depth: usize,
+    pub v_fov: f64,
+    pub look_from: Pos3,
+    pub look_at: Pos3,
+    pub vup: Vec3,
 }
 
 impl Default for CameraOptions {
@@ -22,6 +26,10 @@ impl Default for CameraOptions {
             image_width: 100,
             samples_per_pixel: 10,
             max_depth: 10,
+            v_fov: 90.,
+            look_from: Pos3::default(),
+            look_at: Pos3::new(0., 0., -1.),
+            vup: Pos3::new(0., 1., 0.),
         }
     }
 }
@@ -34,9 +42,13 @@ pub struct Camera {
     pixel00_loc: Pos3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
+    u: Vec3,
+    v: Vec3,
+    w: Vec3,
     samples_per_pixel: usize,
     pixel_samples_scale: f64,
     max_depth: usize,
+    v_fov: f64,
 }
 
 impl Camera {
@@ -46,19 +58,26 @@ impl Camera {
 
         // Camera
 
+        let v_fov = options.v_fov;
         let focal_length = 1.;
-        let viewport_height = 2.;
+        let theta = v_fov.to_radians();
+        let h = (theta / 2.).tan();
+        let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (image_width as f64) / (image_height as f64);
-        let center = Pos3::default();
+        let center = options.look_from;
 
-        let viewport_u = Vec3::new(viewport_width, 0., 0.);
-        let viewport_v = Vec3::new(0., -viewport_height, 0.);
+        let w = (options.look_from - options.look_at).normalize();
+        let u = options.vup.cross(&w).normalize();
+        let v = w.cross(&u);
+
+        let viewport_u = u * viewport_width;
+        let viewport_v = v * -viewport_height;
 
         let pixel_delta_u = viewport_u / (image_width as f64);
         let pixel_delta_v = viewport_v / (image_height as f64);
 
         let viewport_upper_left =
-            center - Vec3::new(0., 0., focal_length) - (viewport_u + viewport_v) / 2.;
+            center - w * focal_length - (viewport_u + viewport_v) / 2.;
 
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) / 2.;
 
@@ -78,9 +97,13 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
+            u,
+            v,
+            w,
             samples_per_pixel,
             pixel_samples_scale,
             max_depth,
+            v_fov,
         }
     }
 
