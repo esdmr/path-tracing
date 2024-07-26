@@ -11,4 +11,5 @@ lto = true
 opt-level = 3
 
 [dependencies]
+indicatif = "0.17.8"
 rand = "0.8.5"

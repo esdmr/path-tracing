@@ -1,3 +1,5 @@
+use indicatif::ProgressIterator;
+
 use crate::{
     f64::{lerp, random},
     hittable::Hittable,
@@ -169,13 +171,7 @@ impl Camera {
     pub fn render(&self, world: &dyn Hittable) -> PPMImage {
         let mut image = PPMImage::new_empty(self.image_width, self.image_height);
 
-        for y in 0..image.height() {
-            eprint!(
-                "\rScanlines remaining: {:4}/{:4}",
-                image.height() - y,
-                image.height()
-            );
-
+        for y in (0..image.height()).progress() {
             for x in 0..image.width() {
                 let mut color = Color::default();
 
@@ -188,7 +184,6 @@ impl Camera {
             }
         }
 
-        eprintln!("\nDone");
         image
     }
 }
