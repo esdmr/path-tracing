@@ -64,6 +64,16 @@ impl Vec3 {
         }
     }
 
+    pub fn random_in_unit_disk() -> Self {
+        loop {
+            let p = Vec3(Interval::new(-1., 1.).random(), Interval::new(-1., 1.).random(), 0.);
+
+            if p.squared_abs() < 1. {
+                return p;
+            }
+        }
+    }
+
     pub fn random_normalized() -> Self {
         Self::random_in_unit_sphere().normalize()
     }

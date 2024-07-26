@@ -17,6 +17,8 @@ pub struct CameraOptions {
     pub look_from: Pos3,
     pub look_at: Pos3,
     pub vup: Vec3,
+    pub defocus_angle: f64,
+    pub focus_dist: f64,
 }
 
 impl Default for CameraOptions {
@@ -30,6 +32,8 @@ impl Default for CameraOptions {
             look_from: Pos3::default(),
             look_at: Pos3::new(0., 0., -1.),
             vup: Pos3::new(0., 1., 0.),
+            defocus_angle: 0.,
+            focus_dist: 10.,
         }
     }
 }
@@ -45,6 +49,9 @@ pub struct Camera {
     u: Vec3,
     v: Vec3,
     w: Vec3,
+    defocus_angle: f64,
+    defocus_disk_u: Vec3,
+    defocus_disk_v: Vec3,
     samples_per_pixel: usize,
     pixel_samples_scale: f64,
     max_depth: usize,
@@ -59,10 +66,9 @@ impl Camera {
         // Camera
 
         let v_fov = options.v_fov;
-        let focal_length = 1.;
         let theta = v_fov.to_radians();
         let h = (theta / 2.).tan();
-        let viewport_height = 2. * h * focal_length;
+        let viewport_height = 2. * h * options.focus_dist;
         let viewport_width = viewport_height * (image_width as f64) / (image_height as f64);
         let center = options.look_from;
 
@@ -77,7 +83,7 @@ impl Camera {
         let pixel_delta_v = viewport_v / (image_height as f64);
 
         let viewport_upper_left =
-            center - w * focal_length - (viewport_u + viewport_v) / 2.;
+            center - w * options.focus_dist - (viewport_u + viewport_v) / 2.;
 
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) / 2.;
 
@@ -90,6 +96,14 @@ impl Camera {
 
         let max_depth = options.max_depth;
 
+        // Defocus Blur
+
+        let defocus_angle = options.defocus_angle;
+        let defocus_radius = options.focus_dist * (defocus_angle / 2.).to_radians().tan();
+
+        let defocus_disk_u = u * defocus_radius;
+        let defocus_disk_v = v * defocus_radius;
+
         Self {
             image_width,
             image_height,
@@ -100,6 +114,9 @@ impl Camera {
             u,
             v,
             w,
+            defocus_angle,
+            defocus_disk_u,
+            defocus_disk_v,
             samples_per_pixel,
             pixel_samples_scale,
             max_depth,
@@ -113,11 +130,22 @@ impl Camera {
             + (self.pixel_delta_u * ((x as f64) + offset.x()))
             + (self.pixel_delta_v * ((y as f64) + offset.y()));
 
-        Ray::new(self.center, pixel_sample - self.center, x, y)
+        let origin = if self.defocus_angle <= 0. {
+            self.center
+        } else {
+            self.sample_defocus_disk()
+        };
+
+        Ray::new(origin, pixel_sample - origin, x, y)
     }
 
     fn sample_square() -> Vec3 {
         Vec3::new(random() - 0.5, random() - 0.5, 0.)
+    }
+
+    fn sample_defocus_disk(&self) -> Vec3 {
+        let p = Vec3::random_in_unit_disk();
+        self.center + self.defocus_disk_u * p.x() + self.defocus_disk_v * p.y()
     }
 
     fn ray_color(r: &Ray, depth: usize, world: &dyn Hittable) -> Color {
