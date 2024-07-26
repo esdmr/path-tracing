@@ -4,7 +4,7 @@ use crate::{
     f64::{lerp, random},
     hittable::Hittable,
     interval::Interval,
-    ppm::PPMImage,
+    ppm::{PPMColor, PPMImage},
     ray::Ray,
     vec3::{Color, Pos3, Vec3},
 };
@@ -158,19 +158,23 @@ impl Camera {
         lerp(a, Color::new(1., 1., 1.), Color::new(0.5, 0.7, 1.))
     }
 
+    fn render_pixel(&self, world: &dyn Hittable, x: usize, y: usize) -> PPMColor {
+        let mut color = Color::default();
+
+        for _sample in 0..self.samples_per_pixel {
+            let ray = self.get_ray(x, y);
+            color += Self::ray_color(&ray, self.max_depth, world);
+        }
+
+        (color * self.pixel_samples_scale).into()
+    }
+
     pub fn render(&self, world: &dyn Hittable) -> PPMImage {
         let mut image = PPMImage::new(self.image_width, self.image_height);
 
         for y in (0..image.height()).progress() {
             for x in 0..image.width() {
-                let mut color = Color::default();
-
-                for _sample in 0..self.samples_per_pixel {
-                    let ray = self.get_ray(x, y);
-                    color += Self::ray_color(&ray, self.max_depth, world);
-                }
-
-                image[(x, y)] = (color * self.pixel_samples_scale).into();
+                image[(x, y)] = self.render_pixel(world, x, y);
             }
         }
 
