@@ -1,8 +1,9 @@
-use indicatif::ProgressIterator;
+use indicatif::{ParallelProgressIterator, ProgressIterator};
+use rayon::prelude::*;
 
 use crate::{
     f64::{lerp, random},
-    hittable::Hittable,
+    hittable::HittableObject,
     interval::Interval,
     ppm::{PPMColor, PPMImage},
     ray::Ray,
@@ -140,7 +141,7 @@ impl Camera {
         self.center + self.defocus_disk_u * p.x() + self.defocus_disk_v * p.y()
     }
 
-    fn ray_color(r: &Ray, depth: usize, world: &dyn Hittable) -> Color {
+    fn ray_color(r: &Ray, depth: usize, world: &HittableObject) -> Color {
         if depth == 0 {
             return Color::default();
         }
@@ -158,7 +159,7 @@ impl Camera {
         lerp(a, Color::new(1., 1., 1.), Color::new(0.5, 0.7, 1.))
     }
 
-    fn render_pixel(&self, world: &dyn Hittable, x: usize, y: usize) -> PPMColor {
+    fn render_pixel(&self, world: &HittableObject, x: usize, y: usize) -> PPMColor {
         let mut color = Color::default();
 
         for _sample in 0..self.samples_per_pixel {
@@ -169,7 +170,7 @@ impl Camera {
         (color * self.pixel_samples_scale).into()
     }
 
-    pub fn render(&self, world: &dyn Hittable) -> PPMImage {
+    pub fn render(&self, world: &HittableObject) -> PPMImage {
         let mut image = PPMImage::new(self.image_width, self.image_height);
 
         for y in (0..image.height()).progress() {
@@ -179,5 +180,21 @@ impl Camera {
         }
 
         image
+    }
+
+    pub fn render_parallel(&self, world: &HittableObject) -> PPMImage {
+        PPMImage::new_with(
+            self.image_width,
+            self.image_height,
+            (0..self.image_height)
+                .into_par_iter()
+                .progress()
+                .flat_map(|y| {
+                    (0..self.image_width)
+                        .map(|x| self.render_pixel(world, x, y))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        )
     }
 }

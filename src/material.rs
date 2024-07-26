@@ -13,7 +13,7 @@ pub struct ScatterRecord {
     pub scattered: Ray,
 }
 
-pub trait Material: Debug {
+pub trait Material: Debug + Send + Sync {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
         let _ = r_in;
         let _ = rec;

@@ -85,7 +85,7 @@ pub fn main() {
     let camera = Camera::new(CameraOptions {
         aspect_ratio: 16. / 9.,
         image_width: 1200,
-        samples_per_pixel: 50,
+        samples_per_pixel: 10,
         max_depth: 50,
         v_fov: 20.,
         look_from: Pos3::new(13., 2., 3.),
@@ -95,7 +95,7 @@ pub fn main() {
         focus_dist: 10.,
     });
 
-    let image = camera.render(&world);
+    let image = camera.render_parallel(&world.into());
 
     println!("{image}");
 }

@@ -38,6 +38,14 @@ impl PPMImage {
         }
     }
 
+    pub fn new_with(width: usize, height: usize, pixels: Vec<PPMColor>) -> Self {
+        Self {
+            width,
+            height,
+            pixels,
+        }
+    }
+
     pub const fn width(&self) -> usize {
         self.width
     }
