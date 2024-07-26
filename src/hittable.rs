@@ -1,4 +1,4 @@
-use std::{fmt::Debug, rc::Rc};
+use std::{fmt::Debug, sync::Arc};
 
 use crate::{
     interval::Interval,
@@ -46,4 +46,4 @@ pub trait Hittable: Debug {
     fn hit(&self, r: &Ray, ray_t: Interval) -> Option<HitRecord>;
 }
 
-pub type HittableObject = Rc<dyn Hittable>;
+pub type HittableObject = Arc<dyn Hittable>;

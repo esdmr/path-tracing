@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::{
     hittable::{HitRecord, Hittable, HittableObject},
@@ -45,6 +45,6 @@ impl Hittable for HittableList {
 
 impl From<HittableList> for HittableObject {
     fn from(val: HittableList) -> Self {
-        Rc::new(val)
+        Arc::new(val)
     }
 }

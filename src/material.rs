@@ -1,4 +1,4 @@
-use std::{fmt::Debug, rc::Rc};
+use std::{fmt::Debug, sync::Arc};
 
 use crate::{
     f64::random,
@@ -22,7 +22,7 @@ pub trait Material: Debug {
     }
 }
 
-pub type MaterialObject = Rc<dyn Material>;
+pub type MaterialObject = Arc<dyn Material>;
 
 // FIXME: Get rid of the default material
 
@@ -33,7 +33,7 @@ impl Material for DefaultMaterial {}
 
 impl From<DefaultMaterial> for MaterialObject {
     fn from(value: DefaultMaterial) -> Self {
-        Rc::new(value)
+        Arc::new(value)
     }
 }
 
@@ -65,7 +65,7 @@ impl Material for LambertianMaterial {
 
 impl From<LambertianMaterial> for MaterialObject {
     fn from(value: LambertianMaterial) -> Self {
-        Rc::new(value)
+        Arc::new(value)
     }
 }
 
@@ -96,7 +96,7 @@ impl Material for MetalMaterial {
 
 impl From<MetalMaterial> for MaterialObject {
     fn from(value: MetalMaterial) -> Self {
-        Rc::new(value)
+        Arc::new(value)
     }
 }
 
@@ -144,6 +144,6 @@ impl Material for DielectricMaterial {
 
 impl From<DielectricMaterial> for MaterialObject {
     fn from(value: DielectricMaterial) -> Self {
-        Rc::new(value)
+        Arc::new(value)
     }
 }
