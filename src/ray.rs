@@ -34,9 +34,9 @@ impl Ray {
         self.pixel_y
     }
 
-	pub const fn is_pixel_at(&self, x: usize, y: usize) -> bool {
-		self.pixel_x == x && self.pixel_y == y
-	}
+    pub const fn is_pixel_at(&self, x: usize, y: usize) -> bool {
+        self.pixel_x == x && self.pixel_y == y
+    }
 
     pub fn at(&self, t: f64) -> Pos3 {
         self.origin + self.direction * t

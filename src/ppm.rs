@@ -30,17 +30,7 @@ pub struct PPMImage {
 }
 
 impl PPMImage {
-    pub fn new(width: usize, height: usize, mut pixels: Vec<PPMColor>) -> Self {
-        pixels.resize_with(width * height, Default::default);
-
-        Self {
-            width,
-            height,
-            pixels,
-        }
-    }
-
-    pub fn new_empty(width: usize, height: usize) -> Self {
+    pub fn new(width: usize, height: usize) -> Self {
         Self {
             width,
             height,

@@ -66,7 +66,11 @@ impl Vec3 {
 
     pub fn random_in_unit_disk() -> Self {
         loop {
-            let p = Vec3(Interval::new(-1., 1.).random(), Interval::new(-1., 1.).random(), 0.);
+            let p = Vec3(
+                Interval::new(-1., 1.).random(),
+                Interval::new(-1., 1.).random(),
+                0.,
+            );
 
             if p.squared_abs() < 1. {
                 return p;
@@ -101,7 +105,7 @@ impl Vec3 {
         let cos_theta = (-self).dot(normal).min(1.);
         let r_out_perpendicular = (*self + normal * cos_theta) * eta_i_over_eta_t;
         let r_out_parallel = normal * -(1. - r_out_perpendicular.squared_abs()).abs().sqrt();
-        return r_out_perpendicular + r_out_parallel;
+        r_out_perpendicular + r_out_parallel
     }
 }
 

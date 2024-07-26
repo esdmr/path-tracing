@@ -1,7 +1,5 @@
 use std::ops::{Add, Mul};
 
-pub const PI: f64 = std::f64::consts::PI;
-
 pub fn random() -> f64 {
     rand::random()
 }

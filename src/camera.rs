@@ -48,16 +48,12 @@ pub struct Camera {
     pixel00_loc: Pos3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
-    u: Vec3,
-    v: Vec3,
-    w: Vec3,
     defocus_angle: f64,
     defocus_disk_u: Vec3,
     defocus_disk_v: Vec3,
     samples_per_pixel: usize,
     pixel_samples_scale: f64,
     max_depth: usize,
-    v_fov: f64,
 }
 
 impl Camera {
@@ -67,8 +63,7 @@ impl Camera {
 
         // Camera
 
-        let v_fov = options.v_fov;
-        let theta = v_fov.to_radians();
+        let theta = options.v_fov.to_radians();
         let h = (theta / 2.).tan();
         let viewport_height = 2. * h * options.focus_dist;
         let viewport_width = viewport_height * (image_width as f64) / (image_height as f64);
@@ -84,8 +79,7 @@ impl Camera {
         let pixel_delta_u = viewport_u / (image_width as f64);
         let pixel_delta_v = viewport_v / (image_height as f64);
 
-        let viewport_upper_left =
-            center - w * options.focus_dist - (viewport_u + viewport_v) / 2.;
+        let viewport_upper_left = center - w * options.focus_dist - (viewport_u + viewport_v) / 2.;
 
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) / 2.;
 
@@ -113,16 +107,12 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
-            u,
-            v,
-            w,
             defocus_angle,
             defocus_disk_u,
             defocus_disk_v,
             samples_per_pixel,
             pixel_samples_scale,
             max_depth,
-            v_fov,
         }
     }
 
@@ -151,7 +141,7 @@ impl Camera {
     }
 
     fn ray_color(r: &Ray, depth: usize, world: &dyn Hittable) -> Color {
-        if depth <= 0 {
+        if depth == 0 {
             return Color::default();
         }
 
@@ -169,7 +159,7 @@ impl Camera {
     }
 
     pub fn render(&self, world: &dyn Hittable) -> PPMImage {
-        let mut image = PPMImage::new_empty(self.image_width, self.image_height);
+        let mut image = PPMImage::new(self.image_width, self.image_height);
 
         for y in (0..image.height()).progress() {
             for x in 0..image.width() {

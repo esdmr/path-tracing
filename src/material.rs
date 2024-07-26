@@ -87,7 +87,7 @@ impl Material for MetalMaterial {
             r_in.direction().reflect(&rec.normal) + Vec3::random_normalized() * self.fuzz;
         let scattered = Ray::new(rec.p, reflected, r_in.pixel_x(), r_in.pixel_y());
 
-        (scattered.direction().dot(&rec.normal) > 0.).then(|| ScatterRecord {
+        (scattered.direction().dot(&rec.normal) > 0.).then_some(ScatterRecord {
             attenuation: self.albedo,
             scattered,
         })

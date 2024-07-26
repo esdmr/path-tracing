@@ -1,7 +1,10 @@
 use std::{fmt::Debug, rc::Rc};
 
 use crate::{
-    interval::Interval, material::MaterialObject, ray::Ray, vec3::{Pos3, Vec3}
+    interval::Interval,
+    material::MaterialObject,
+    ray::Ray,
+    vec3::{Pos3, Vec3},
 };
 
 #[derive(Debug, Clone)]
@@ -14,13 +17,7 @@ pub struct HitRecord {
 }
 
 impl HitRecord {
-    pub fn new(
-        t: f64,
-        p: Pos3,
-        mat: MaterialObject,
-        r: &Ray,
-        outward_normal: Vec3,
-    ) -> Self {
+    pub fn new(t: f64, p: Pos3, mat: MaterialObject, r: &Ray, outward_normal: Vec3) -> Self {
         let mut rec = HitRecord {
             t,
             p,
