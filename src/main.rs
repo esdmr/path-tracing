@@ -1,18 +1,24 @@
 mod camera;
+mod dielectric;
 mod f64;
 mod hittable;
 mod hittable_list;
 mod interval;
+mod lambertian;
 mod material;
+mod metal;
 mod ppm;
 mod ray;
 mod sphere;
 mod vec3;
 use camera::{Camera, CameraOptions};
+use dielectric::DielectricMaterial;
 use f64::random;
 use hittable_list::HittableList;
 use interval::Interval;
-use material::{DielectricMaterial, LambertianMaterial, MaterialObject, MetalMaterial};
+use lambertian::LambertianMaterial;
+use material::MaterialObject;
+use metal::MetalMaterial;
 use sphere::Sphere;
 use vec3::{Color, Pos3, Vec3};
 
