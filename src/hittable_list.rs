@@ -1,12 +1,10 @@
-use std::sync::Arc;
-
 use crate::{
     hittable::{HitRecord, Hittable, HittableObject},
     interval::Interval,
     ray::Ray,
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct HittableList {
     objects: Vec<HittableObject>,
 }
@@ -40,11 +38,5 @@ impl Hittable for HittableList {
         }
 
         closest_rec
-    }
-}
-
-impl From<HittableList> for HittableObject {
-    fn from(val: HittableList) -> Self {
-        Arc::new(val)
     }
 }

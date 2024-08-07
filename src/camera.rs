@@ -3,8 +3,9 @@ use rayon::prelude::*;
 
 use crate::{
     f64::{lerp, random},
-    hittable::HittableObject,
+    hittable::{Hittable, HittableObject},
     interval::Interval,
+    material::Material,
     ppm::{PPMColor, PPMImage},
     ray::Ray,
     vec3::{Color, Pos3, Vec3},

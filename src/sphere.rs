@@ -1,7 +1,5 @@
-use std::sync::Arc;
-
 use crate::{
-    hittable::{HitRecord, Hittable, HittableObject},
+    hittable::{HitRecord, Hittable},
     interval::Interval,
     material::MaterialObject,
     ray::Ray,
@@ -53,11 +51,5 @@ impl Hittable for Sphere {
         let outward_normal = (p - self.center) / self.radius;
 
         Some(HitRecord::new(t, p, self.mat.clone(), r, outward_normal))
-    }
-}
-
-impl From<Sphere> for HittableObject {
-    fn from(val: Sphere) -> Self {
-        Arc::new(val)
     }
 }

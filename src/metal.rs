@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use crate::{
     hittable::HitRecord,
-    material::{Material, MaterialObject, ScatterRecord},
+    material::{Material, ScatterRecord},
     ray::Ray,
     vec3::{Color, Vec3},
 };
@@ -29,11 +27,5 @@ impl Material for MetalMaterial {
             attenuation: self.albedo,
             scattered,
         })
-    }
-}
-
-impl From<MetalMaterial> for MaterialObject {
-    fn from(value: MetalMaterial) -> Self {
-        Arc::new(value)
     }
 }

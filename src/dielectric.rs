@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use crate::{
     f64::random,
     hittable::HitRecord,
-    material::{Material, MaterialObject, ScatterRecord},
+    material::{Material, ScatterRecord},
     ray::Ray,
     vec3::Color,
 };
@@ -47,11 +45,5 @@ impl Material for DielectricMaterial {
             attenuation: Color::new(1., 1., 1.),
             scattered: Ray::new(rec.p, direction, r_in.pixel_x(), r_in.pixel_y()),
         })
-    }
-}
-
-impl From<DielectricMaterial> for MaterialObject {
-    fn from(value: DielectricMaterial) -> Self {
-        Arc::new(value)
     }
 }

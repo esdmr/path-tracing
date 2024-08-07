@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use crate::{
     hittable::HitRecord,
-    material::{Material, MaterialObject, ScatterRecord},
+    material::{Material, ScatterRecord},
     ray::Ray,
     vec3::{Color, Vec3},
 };
@@ -30,11 +28,5 @@ impl Material for LambertianMaterial {
             attenuation: self.albedo,
             scattered: Ray::new(rec.p, scatter_direction, r_in.pixel_x(), r_in.pixel_y()),
         })
-    }
-}
-
-impl From<LambertianMaterial> for MaterialObject {
-    fn from(value: LambertianMaterial) -> Self {
-        Arc::new(value)
     }
 }
