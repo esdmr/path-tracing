@@ -24,19 +24,6 @@ pub trait Material: Debug + Send + Sync {
 
 pub type MaterialObject = Arc<dyn Material>;
 
-// FIXME: Get rid of the default material
-
-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
-pub struct DefaultMaterial;
-
-impl Material for DefaultMaterial {}
-
-impl From<DefaultMaterial> for MaterialObject {
-    fn from(value: DefaultMaterial) -> Self {
-        Arc::new(value)
-    }
-}
-
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct LambertianMaterial {
     albedo: Color,
