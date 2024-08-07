@@ -190,10 +190,10 @@ impl Camera {
             (0..self.image_height)
                 .into_par_iter()
                 .progress()
-                .flat_map(|y| {
+                .flat_map(move |y| {
                     (0..self.image_width)
-                        .map(|x| self.render_pixel(world, x, y))
-                        .collect::<Vec<_>>()
+                        .into_par_iter()
+                        .map(move |x| self.render_pixel(world, x, y))
                 })
                 .collect(),
         )
