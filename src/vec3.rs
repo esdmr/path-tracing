@@ -172,6 +172,15 @@ macro_rules! impl_math_op {
             }
         }
 
+        impl $OpTrait<Vec3> for f64 {
+            type Output = Vec3;
+
+            fn $fn_op(self, mut rhs: Vec3) -> Self::Output {
+                rhs.$fn_op_assign(self);
+                rhs
+            }
+        }
+
         impl $OpTrait for &Vec3 {
             type Output = Vec3;
 
@@ -188,6 +197,16 @@ macro_rules! impl_math_op {
             fn $fn_op(self, rhs: f64) -> Self::Output {
                 let mut result = self.clone();
                 result.$fn_op_assign(rhs);
+                result
+            }
+        }
+
+        impl $OpTrait<&Vec3> for f64 {
+            type Output = Vec3;
+
+            fn $fn_op(self, rhs: &Vec3) -> Self::Output {
+                let mut result = rhs.clone();
+                result.$fn_op_assign(self);
                 result
             }
         }
