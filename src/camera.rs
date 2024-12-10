@@ -2,7 +2,7 @@ use indicatif::{ParallelProgressIterator, ProgressIterator};
 use rayon::prelude::*;
 
 use crate::{
-    f64::{lerp, random},
+    float::{Fl, lerp, random},
     hittable::{Hittable, HittableObject},
     interval::Interval,
     material::Material,
@@ -13,16 +13,16 @@ use crate::{
 
 #[derive(Debug, Clone, Copy)]
 pub struct CameraOptions {
-    pub aspect_ratio: f64,
+    pub aspect_ratio: Fl,
     pub image_width: usize,
     pub samples_per_pixel: usize,
     pub max_depth: usize,
-    pub v_fov: f64,
+    pub v_fov: Fl,
     pub look_from: Pos3,
     pub look_at: Pos3,
     pub vup: Vec3,
-    pub defocus_angle: f64,
-    pub focus_dist: f64,
+    pub defocus_angle: Fl,
+    pub focus_dist: Fl,
 }
 
 impl Default for CameraOptions {
@@ -50,25 +50,25 @@ pub struct Camera {
     pixel00_loc: Pos3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
-    defocus_angle: f64,
+    defocus_angle: Fl,
     defocus_disk_u: Vec3,
     defocus_disk_v: Vec3,
     samples_per_pixel: usize,
-    pixel_samples_scale: f64,
+    pixel_samples_scale: Fl,
     max_depth: usize,
 }
 
 impl Camera {
     pub fn new(options: CameraOptions) -> Self {
         let image_width = options.image_width;
-        let image_height = (((image_width as f64) / options.aspect_ratio).trunc() as usize).max(1);
+        let image_height = (((image_width as Fl) / options.aspect_ratio).trunc() as usize).max(1);
 
         // Camera
 
         let theta = options.v_fov.to_radians();
         let h = (theta / 2.).tan();
         let viewport_height = 2. * h * options.focus_dist;
-        let viewport_width = viewport_height * (image_width as f64) / (image_height as f64);
+        let viewport_width = viewport_height * (image_width as Fl) / (image_height as Fl);
         let center = options.look_from;
 
         let w = (options.look_from - options.look_at).normalize();
@@ -78,8 +78,8 @@ impl Camera {
         let viewport_u = u * viewport_width;
         let viewport_v = v * -viewport_height;
 
-        let pixel_delta_u = viewport_u / (image_width as f64);
-        let pixel_delta_v = viewport_v / (image_height as f64);
+        let pixel_delta_u = viewport_u / (image_width as Fl);
+        let pixel_delta_v = viewport_v / (image_height as Fl);
 
         let viewport_upper_left = center - w * options.focus_dist - (viewport_u + viewport_v) / 2.;
 
@@ -88,7 +88,7 @@ impl Camera {
         // Anti-aliasing
 
         let samples_per_pixel = options.samples_per_pixel;
-        let pixel_samples_scale = 1. / (samples_per_pixel as f64);
+        let pixel_samples_scale = 1. / (samples_per_pixel as Fl);
 
         // Diffuse
 
@@ -121,8 +121,8 @@ impl Camera {
     fn get_ray(&self, x: usize, y: usize) -> Ray {
         let offset = Self::sample_square();
         let pixel_sample = self.pixel00_loc
-            + (self.pixel_delta_u * ((x as f64) + offset.x()))
-            + (self.pixel_delta_v * ((y as f64) + offset.y()));
+            + (self.pixel_delta_u * ((x as Fl) + offset.x()))
+            + (self.pixel_delta_v * ((y as Fl) + offset.y()));
 
         let origin = if self.defocus_angle <= 0. {
             self.center
@@ -147,7 +147,7 @@ impl Camera {
             return Color::default();
         }
 
-        if let Some(rec) = world.hit(r, Interval::new(0.001, f64::INFINITY)) {
+        if let Some(rec) = world.hit(r, Interval::new(0.001, Fl::INFINITY)) {
             if let Some(rec) = rec.mat.scatter(r, &rec) {
                 return Self::ray_color(&rec.scattered, depth - 1, world) * rec.attenuation;
             }

@@ -1,12 +1,12 @@
 use std::fmt::Debug;
 
 use crate::{
-    hittable_list::HittableList, interval::Interval, material::MaterialObject, ray::Ray, sphere::Sphere, vec3::{Pos3, Vec3}
+    float::Fl, hittable_list::HittableList, interval::Interval, material::MaterialObject, ray::Ray, sphere::Sphere, vec3::{Pos3, Vec3}
 };
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {
-    pub t: f64,
+    pub t: Fl,
     pub p: Pos3,
     pub mat: MaterialObject,
     pub front_face: bool,
@@ -14,7 +14,7 @@ pub struct HitRecord {
 }
 
 impl HitRecord {
-    pub fn new(t: f64, p: Pos3, mat: MaterialObject, r: &Ray, outward_normal: Vec3) -> Self {
+    pub fn new(t: Fl, p: Pos3, mat: MaterialObject, r: &Ray, outward_normal: Vec3) -> Self {
         let mut rec = HitRecord {
             t,
             p,

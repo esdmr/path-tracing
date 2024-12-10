@@ -1,20 +1,16 @@
 use crate::{
-    hittable::{HitRecord, Hittable},
-    interval::Interval,
-    material::MaterialObject,
-    ray::Ray,
-    vec3::Pos3,
+    float::Fl, hittable::{HitRecord, Hittable}, interval::Interval, material::MaterialObject, ray::Ray, vec3::Pos3
 };
 
 #[derive(Debug, Clone)]
 pub struct Sphere {
     center: Pos3,
-    radius: f64,
+    radius: Fl,
     mat: MaterialObject,
 }
 
 impl Sphere {
-    pub fn new(center: Pos3, radius: f64, mat: MaterialObject) -> Self {
+    pub fn new(center: Pos3, radius: Fl, mat: MaterialObject) -> Self {
         Self {
             center,
             radius,

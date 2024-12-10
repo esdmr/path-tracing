@@ -1,6 +1,6 @@
 mod camera;
 mod dielectric;
-mod f64;
+mod float;
 mod hittable;
 mod hittable_list;
 mod interval;
@@ -13,7 +13,7 @@ mod sphere;
 mod vec3;
 use camera::{Camera, CameraOptions};
 use dielectric::DielectricMaterial;
-use f64::random;
+use float::{random, Fl};
 use hittable_list::HittableList;
 use interval::Interval;
 use lambertian::LambertianMaterial;
@@ -32,9 +32,9 @@ pub fn main() {
         for b in -11..11 {
             let choose_mat = random();
             let center = Pos3::new(
-                (a as f64) + 0.9 * random(),
+                (a as Fl) + 0.9 * random(),
                 0.2,
-                (b as f64) + 0.9 * random(),
+                (b as Fl) + 0.9 * random(),
             );
 
             if choose_mat < 0.8 {
@@ -91,7 +91,7 @@ pub fn main() {
     let camera = Camera::new(CameraOptions {
         aspect_ratio: 16. / 9.,
         image_width: 1200,
-        samples_per_pixel: 10,
+        samples_per_pixel: 50,
         max_depth: 50,
         v_fov: 20.,
         look_from: Pos3::new(13., 2., 3.),

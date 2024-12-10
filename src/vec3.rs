@@ -1,28 +1,28 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-use crate::{f64::random, interval::Interval, ppm::PPMColor};
+use crate::{float::{random, Fl}, interval::Interval, ppm::PPMColor};
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
-pub struct Vec3(f64, f64, f64);
+pub struct Vec3(Fl, Fl, Fl);
 
 impl Vec3 {
-    pub const fn new(x: f64, y: f64, z: f64) -> Self {
+    pub const fn new(x: Fl, y: Fl, z: Fl) -> Self {
         Self(x, y, z)
     }
 
-    pub const fn x(&self) -> f64 {
+    pub const fn x(&self) -> Fl {
         self.0
     }
 
-    pub const fn y(&self) -> f64 {
+    pub const fn y(&self) -> Fl {
         self.1
     }
 
-    pub const fn z(&self) -> f64 {
+    pub const fn z(&self) -> Fl {
         self.2
     }
 
-    pub fn dot(&self, rhs: &Self) -> f64 {
+    pub fn dot(&self, rhs: &Self) -> Fl {
         self.0 * rhs.0 + self.1 * rhs.1 + self.2 * rhs.2
     }
 
@@ -34,11 +34,11 @@ impl Vec3 {
         )
     }
 
-    pub fn squared_abs(&self) -> f64 {
+    pub fn squared_abs(&self) -> Fl {
         self.dot(self)
     }
 
-    pub fn abs(&self) -> f64 {
+    pub fn abs(&self) -> Fl {
         self.squared_abs().sqrt()
     }
 
@@ -101,7 +101,7 @@ impl Vec3 {
         *self - normal * (2. * self.dot(normal))
     }
 
-    pub fn refract(&self, normal: &Self, eta_i_over_eta_t: f64) -> Self {
+    pub fn refract(&self, normal: &Self, eta_i_over_eta_t: Fl) -> Self {
         let cos_theta = (-self).dot(normal).min(1.);
         let r_out_perpendicular = (*self + normal * cos_theta) * eta_i_over_eta_t;
         let r_out_parallel = normal * -(1. - r_out_perpendicular.squared_abs()).abs().sqrt();
@@ -146,8 +146,8 @@ macro_rules! impl_math_op {
             }
         }
 
-        impl $OpAssignTrait<f64> for Vec3 {
-            fn $fn_op_assign(&mut self, rhs: f64) {
+        impl $OpAssignTrait<Fl> for Vec3 {
+            fn $fn_op_assign(&mut self, rhs: Fl) {
                 self.0.$fn_op_assign(rhs);
                 self.1.$fn_op_assign(rhs);
                 self.2.$fn_op_assign(rhs);
@@ -163,16 +163,16 @@ macro_rules! impl_math_op {
             }
         }
 
-        impl $OpTrait<f64> for Vec3 {
+        impl $OpTrait<Fl> for Vec3 {
             type Output = Self;
 
-            fn $fn_op(mut self, rhs: f64) -> Self::Output {
+            fn $fn_op(mut self, rhs: Fl) -> Self::Output {
                 self.$fn_op_assign(rhs);
                 self
             }
         }
 
-        impl $OpTrait<Vec3> for f64 {
+        impl $OpTrait<Vec3> for Fl {
             type Output = Vec3;
 
             fn $fn_op(self, mut rhs: Vec3) -> Self::Output {
@@ -191,17 +191,17 @@ macro_rules! impl_math_op {
             }
         }
 
-        impl $OpTrait<f64> for &Vec3 {
+        impl $OpTrait<Fl> for &Vec3 {
             type Output = Vec3;
 
-            fn $fn_op(self, rhs: f64) -> Self::Output {
+            fn $fn_op(self, rhs: Fl) -> Self::Output {
                 let mut result = self.clone();
                 result.$fn_op_assign(rhs);
                 result
             }
         }
 
-        impl $OpTrait<&Vec3> for f64 {
+        impl $OpTrait<&Vec3> for Fl {
             type Output = Vec3;
 
             fn $fn_op(self, rhs: &Vec3) -> Self::Output {

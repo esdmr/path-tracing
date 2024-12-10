@@ -1,5 +1,5 @@
 use crate::{
-    f64::random,
+    float::{random, Fl},
     hittable::HitRecord,
     material::{Material, ScatterRecord},
     ray::Ray,
@@ -8,15 +8,15 @@ use crate::{
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct DielectricMaterial {
-    refraction_index: f64,
+    refraction_index: Fl,
 }
 
 impl DielectricMaterial {
-    pub fn new(refraction_index: f64) -> Self {
+    pub fn new(refraction_index: Fl) -> Self {
         Self { refraction_index }
     }
 
-    fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+    fn reflectance(cosine: Fl, refraction_index: Fl) -> Fl {
         let mut r0 = (1. - refraction_index) / (1. + refraction_index);
         r0 = r0 * r0;
         r0 + (1. - r0) * (1. - cosine).powi(5)

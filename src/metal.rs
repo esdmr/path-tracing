@@ -1,18 +1,15 @@
 use crate::{
-    hittable::HitRecord,
-    material::{Material, ScatterRecord},
-    ray::Ray,
-    vec3::{Color, Vec3},
+    float::Fl, hittable::HitRecord, material::{Material, ScatterRecord}, ray::Ray, vec3::{Color, Vec3}
 };
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct MetalMaterial {
     albedo: Color,
-    fuzz: f64,
+    fuzz: Fl,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo: Color, fuzz: f64) -> Self {
+    pub fn new(albedo: Color, fuzz: Fl) -> Self {
         Self { albedo, fuzz }
     }
 }

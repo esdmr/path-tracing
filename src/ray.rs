@@ -1,4 +1,4 @@
-use crate::vec3::{Pos3, Vec3};
+use crate::{float::Fl, vec3::{Pos3, Vec3}};
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Ray {
@@ -38,7 +38,7 @@ impl Ray {
         self.pixel_x == x && self.pixel_y == y
     }
 
-    pub fn at(&self, t: f64) -> Pos3 {
+    pub fn at(&self, t: Fl) -> Pos3 {
         self.origin + self.direction * t
     }
 }
