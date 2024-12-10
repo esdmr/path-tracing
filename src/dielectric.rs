@@ -43,7 +43,9 @@ impl Material for DielectricMaterial {
 
         Some(ScatterRecord {
             attenuation: Color::new(1., 1., 1.),
-            scattered: Ray::new(rec.p, direction, r_in.pixel_x(), r_in.pixel_y()),
+            scattered: Ray::new(rec.p, direction)
+                .at_time_of(r_in)
+                .for_pixel_of(r_in),
         })
     }
 }

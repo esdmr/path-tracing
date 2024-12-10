@@ -2,7 +2,7 @@ use indicatif::{ParallelProgressIterator, ProgressIterator};
 use rayon::prelude::*;
 
 use crate::{
-    float::{Fl, lerp, random},
+    float::{lerp, random, Fl},
     hittable::{Hittable, HittableObject},
     interval::Interval,
     material::Material,
@@ -130,7 +130,9 @@ impl Camera {
             self.sample_defocus_disk()
         };
 
-        Ray::new(origin, pixel_sample - origin, x, y)
+        Ray::new(origin, pixel_sample - origin)
+            .at_time(random())
+            .for_pixel((x, y))
     }
 
     fn sample_square() -> Vec3 {

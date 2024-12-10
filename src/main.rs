@@ -31,16 +31,17 @@ pub fn main() {
     for a in -11..11 {
         for b in -11..11 {
             let choose_mat = random();
-            let center = Pos3::new(
-                (a as Fl) + 0.9 * random(),
-                0.2,
-                (b as Fl) + 0.9 * random(),
-            );
+            let center = Pos3::new((a as Fl) + 0.9 * random(), 0.2, (b as Fl) + 0.9 * random());
 
             if choose_mat < 0.8 {
                 world.add(
-                    Sphere::new(center, 0.2, LambertianMaterial::new(Color::random()).into())
-                        .into(),
+                    Sphere::new_moving(
+                        center,
+                        center + Vec3::new(0., random() * 0.5, 0.),
+                        0.2,
+                        LambertianMaterial::new(Color::random()).into(),
+                    )
+                    .into(),
                 );
             } else if choose_mat < 0.95 {
                 world.add(
@@ -90,8 +91,8 @@ pub fn main() {
 
     let camera = Camera::new(CameraOptions {
         aspect_ratio: 16. / 9.,
-        image_width: 1200,
-        samples_per_pixel: 50,
+        image_width: 400,
+        samples_per_pixel: 100,
         max_depth: 50,
         v_fov: 20.,
         look_from: Pos3::new(13., 2., 3.),
